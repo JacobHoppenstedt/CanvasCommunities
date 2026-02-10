@@ -9,7 +9,7 @@ export default function CalendarWidget() {
     <div className="bg-white rounded-lg p-4 shadow-sm">
       <div className="text-sm font-medium mb-3">September 2021</div>
       <div className="grid grid-cols-7 gap-1 text-xs text-center">
-        {["S","M","T","W","T","F","S"].map(d=> <div key={d} className="font-semibold">{d}</div>)}
+        {["S","M","T","W","R","F","S"].map(d=> <div key={d} className="font-semibold">{d}</div>)}
         {days.map((d)=> (
           <div key={d} className="p-2 rounded hover:bg-gray-50">{d}</div>
         ))}

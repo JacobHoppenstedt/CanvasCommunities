@@ -1,42 +1,47 @@
 "use client";
+
 import React, { useState } from "react";
-import { motion } from "framer-motion";
 import { Club } from "@/mocks/clubs";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function ClubCard({ club }: { club: Club }) {
-  const [joined, setJoined] = useState(!!club.joined);
-
+  const [joined, setJoined] = useState(Boolean(club.joined));
   return (
-    <motion.article
-      whileHover={{ translateY: -4 }}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      className="bg-white rounded-2xl shadow-sm p-4 hover:shadow-md transition-shadow duration-200"
-      role="group"
-      aria-labelledby={`club-${club.id}-title`}
-    >
-      <div className="flex items-start gap-3">
-        <img src={club.avatarUrl || "/avatars/placeholder.png"} alt={`${club.name} avatar`} className="w-12 h-12 rounded-lg object-cover" />
-        <div className="flex-1">
-          <h2 id={`club-${club.id}-title`} className="text-lg font-medium">{club.name}</h2>
-          <p className="text-sm text-gray-600 mt-1 line-clamp-2">{club.description}</p>
+    <Card className="hover:shadow-md transition-shadow">
+      <CardContent className="flex gap-4">
+        <Avatar>
+          <img src={club.avatarUrl || "/avatars/placeholder.png"} alt={club.name} className="w-12 h-12 rounded" />
+        </Avatar>
 
-          <div className="mt-3 flex flex-wrap gap-2">
-            {club.tags.map((t) => (
-              <span key={t} className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">{t}</span>
-            ))}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h3 className="text-sm font-semibold truncate">{club.name}</h3>
+              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{club.description}</p>
+              <div className="mt-2 flex gap-2 flex-wrap">
+                {club.tags.map((t) => (
+                  <Badge key={t} className="text-xs">
+                    {t}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col items-end gap-2">
+              <Button size="sm" variant={joined ? "ghost" : "default"} onClick={() => setJoined((v) => !v)}>
+                {joined ? "Joined" : "Join"}
+              </Button>
+              <Link href={`/club/${club.id}`} className="text-xs text-muted-foreground underline">
+                View
+              </Link>
+            </div>
           </div>
         </div>
-        <div className="flex flex-col items-end gap-2">
-          <button
-            onClick={() => setJoined(!joined)}
-            className={`px-3 py-1 rounded-md text-sm font-medium shadow-sm transition-colors ${joined ? "bg-orange-500 text-white" : "bg-blue-50 text-blue-700"}`}
-            aria-pressed={joined}
-          >
-            {joined ? "Joined" : "Join"}
-          </button>
-          <button className="text-xs text-gray-500 underline">View</button>
-        </div>
-      </div>
-    </motion.article>
+      </CardContent>
+    </Card>
   );
 }

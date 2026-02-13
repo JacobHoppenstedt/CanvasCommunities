@@ -2,6 +2,19 @@
 
 ## Setup & Run
 
+### Option 1: Docker (Everything)
+
+```bash
+cp .env.example .env
+# Edit .env with DB_USER and DB_PASSWORD
+docker compose up
+```
+
+- Web: http://localhost:3000
+- API: http://localhost:8001/docs
+
+### Option 2: Local Development
+
 **Terminal 1:**
 ```bash
 cd web-platform && npm install && npm run dev

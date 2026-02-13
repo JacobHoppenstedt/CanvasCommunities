@@ -1,0 +1,59 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: gatorcommunities-db
+    environment:
+      POSTGRES_DB: gatorcommunities
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d gatorcommunities"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web-platform:
+    container_name: gatorcommunities-web
+    build:
+      context: ./web-platform
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/gatorcommunities
+      PYTHON_BACKEND_URL: http://ml-engine:8001
+      NODE_ENV: development
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./web-platform:/app
+      - /app/node_modules
+      - /app/.next
+    command: npm run dev
+
+  ml-engine:
+    container_name: gatorcommunities-ml
+    build:
+      context: ./ml-engine
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/gatorcommunities
+    ports:
+      - "8001:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./ml-engine:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  postgres_data:
+    driver: local

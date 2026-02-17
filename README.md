@@ -1,62 +1,29 @@
 # GatorCommunities
 
-Campus club and event discovery platform for UF students with personalized recommendations.
+## Setup & Run
 
-## Quick Start
+### Option 1: Docker (Everything)
 
-### Frontend Setup
 ```bash
-cd frontend
-npm install
-npm run dev
-```
-Runs on http://localhost:3000
-
-### Backend Setup
-```bash
-cd backend
-pyenv local 3.10.1
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-uvicorn main:app --reload
-```
-Runs on http://localhost:8000 (check `/docs` for API endpoints)
-
-## Project Structure
-
-- **`frontend/src/`** - where you write React code (pages, components, utilities)
-- **`backend/main.py`** - where you write API endpoints
-- **`backend/requirements.txt`** - Python dependencies (update this when you add packages)
-
-## Adding Packages
-
-**Frontend:**
-```bash
-cd frontend
-npm install package-name
+cp .env.example .env
+# Edit .env with DB_USER and DB_PASSWORD
+docker compose up
 ```
 
-**Backend:**
+- Web: http://localhost:3000
+- API: http://localhost:8001/docs
+
+### Option 2: Local Development
+
+**Terminal 1:**
 ```bash
-cd backend
-source venv/bin/activate
-pip install package-name
-pip freeze > requirements.txt
+cd web-platform && npm install && npm run dev
 ```
 
-## Root Config Files
+**Terminal 2:**
+```bash
+cd ml-engine && python -m venv venv && source venv/bin/activate && pip install -r requirements.txt && uvicorn main:app --reload --port 8001
+```
 
-Don't touch these — they configure the frameworks:
-- `frontend/`: `package.json`, `tsconfig.json`, `next.config.ts`, `eslint.config.mjs`, `postcss.config.mjs`
-- `backend/`: `requirements.txt` (but update this when adding packages)
-
-## Environment Variables
-
-Copy `.env.example` to `.env` in the backend folder and fill in real values
-
-## Tech Stack
-
-- Frontend: Next.js, React, TypeScript, Tailwind CSS
-- Backend: Python, FastAPI
-- Database: PostgreSQL (setup WIP)
+- Web: http://localhost:3000
+- API: http://localhost:8001/docs

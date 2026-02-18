@@ -1,15 +1,19 @@
 import "./globals.css";
-import Layout from "@/components/Layout";
+import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata = {
   title: "Canvas Communities",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       <body>
-        <Layout>{children}</Layout>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

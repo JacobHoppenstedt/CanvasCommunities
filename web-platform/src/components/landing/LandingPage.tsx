@@ -6,7 +6,7 @@ import Link from "next/link";
 
 const navLinks = [
   { label: "Announcements", href: "/announcements" },
-  { label: "ExplorePage", href: "/recommended" },
+  { label: "ExplorePage", href: "/login" },
   { label: "Calendar", href: "/calendar" },
   { label: "Activity", href: "/activity" },
   { label: "Contact", href: "/contact" },
@@ -40,13 +40,21 @@ export default function LandingPage() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <Link
-              href="/login"
-              className="px-4 py-2 rounded-md bg-orange-500 text-white text-sm font-medium hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-slate-950"
-            >
-              UFL Login
-            </Link>
-          </div>
+          <Link
+            href="/login"
+            className="px-4 py-2 rounded-md bg-orange-500 text-white text-sm font-medium hover:bg-orange-600"
+          >
+            UFL Login
+          </Link>
+
+          <Link
+            href="/signup"
+            className="px-4 py-2 rounded-md bg-white text-slate-900 text-sm font-medium ring-1 ring-slate-200 hover:bg-slate-50"
+          >
+            Sign up
+          </Link>
+        </div>
+
         </header>
 
         {/* Hero card */}
@@ -69,7 +77,7 @@ export default function LandingPage() {
 
                 <div className="mt-7 flex flex-col sm:flex-row gap-3">
                   <Link
-                    href="/recommended"
+                    href="/login"
                     className="px-5 py-3 rounded-md bg-white text-slate-900 ring-1 ring-slate-200 text-sm font-medium hover:bg-slate-50 transition-colors text-center focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-amber-50"
                   >
                     ExplorePage

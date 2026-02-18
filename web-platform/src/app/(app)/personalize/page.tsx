@@ -44,11 +44,6 @@ export default function PersonalizePage() {
           </section>
         ))}
       </div>
-
-      <div className="flex items-center gap-3">
-        <Button variant="default">Save Preferences</Button>
-        <Button variant="outline">Skip</Button>
-      </div>
     </div>
   );
 }

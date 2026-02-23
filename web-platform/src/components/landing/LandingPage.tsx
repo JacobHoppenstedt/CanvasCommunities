@@ -10,6 +10,7 @@ const navLinks = [
   { label: "Calendar", href: "/calendar" },
   { label: "Activity", href: "/activity" },
   { label: "Contact", href: "/contact" },
+  { label: "Personalize", href: "/personalize" },
 ];
 
 export default function LandingPage() {

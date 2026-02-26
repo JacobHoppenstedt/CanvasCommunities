@@ -11,6 +11,7 @@ const navLinks = [
   { label: "Activity", href: "/activity" },
   { label: "Contact", href: "/contact" },
   { label: "Personalize", href: "/personalize" },
+  { label: "Discovery Page", href: "/discovery" },
 ];
 
 export default function LandingPage() {

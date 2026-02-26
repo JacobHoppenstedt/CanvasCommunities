@@ -14,7 +14,7 @@ export default function Login() {
 
   function handleLogin() {
     login({ id: "1", name });
-    router.push("/onboarding/personalize"); // onboarding will intercept later if needed
+    router.push("/onboarding/personalize");
   }
 
   return (

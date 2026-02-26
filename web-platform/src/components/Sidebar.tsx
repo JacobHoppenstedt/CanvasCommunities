@@ -149,7 +149,32 @@ export default function Sidebar() {
           );
         })}
       </nav>
+{/* ───────── DEV TEST LINKS ───────── */}
+{process.env.NODE_ENV === "development" && (
+  <>
+    {!collapsed && (
+      <div className="pt-4 pb-2 text-xs font-medium text-gray-400 px-3">
+        DEV
+      </div>
+    )}
 
+    <Link
+      href="/club-admin/create-community"
+      className="flex items-center rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
+    >
+      <div className="w-6 flex justify-center">🛠</div>
+      {!collapsed && <span className="ml-3">Create Community</span>}
+    </Link>
+
+    <Link
+      href="/club-admin/1/create-post"
+      className="flex items-center rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
+    >
+      <div className="w-6 flex justify-center">✍️</div>
+      {!collapsed && <span className="ml-3">Create Post</span>}
+    </Link>
+  </>
+)}
       {/* ───────── FOOTER ───────── */}
       <div className="border-t p-3">
         <Link

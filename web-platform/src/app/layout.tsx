@@ -1,6 +1,6 @@
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
-import GlobalLogoHeader from "@/components/GlobalLogoHeader";
+//import GlobalLogoHeader from "@/components/GlobalLogoHeader";
 
 export const metadata = {
   title: "Canvas Communities",
@@ -15,7 +15,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AuthProvider>
-          <GlobalLogoHeader />
+          {/* <GlobalLogoHeader /> */}
           {children}
         </AuthProvider>
       </body>

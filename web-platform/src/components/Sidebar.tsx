@@ -12,13 +12,17 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "@/components/ui/avatar";
 
 export default function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // ✅ Fix hydration flicker
   useEffect(() => {
     const saved = localStorage.getItem("sidebar-collapsed");
     if (saved) setCollapsed(JSON.parse(saved));
@@ -88,7 +92,11 @@ export default function Sidebar() {
               key={item.href}
               href={item.href}
               className={`flex items-center rounded-md px-3 py-2 text-sm transition
-              ${active ? "bg-gray-100 font-medium" : "text-gray-600 hover:bg-gray-100"}`}
+              ${
+                active
+                  ? "bg-gray-100 font-medium"
+                  : "text-gray-600 hover:bg-gray-100"
+              }`}
             >
               <div className="w-6 flex justify-center">
                 <Icon className="w-5 h-5" />
@@ -124,13 +132,22 @@ export default function Sidebar() {
               key={club.id}
               href={`/club/${club.id}`}
               className={`flex items-center rounded-md px-3 py-2 text-sm transition
-              ${active ? "bg-gray-50 font-medium" : "text-gray-600 hover:bg-gray-50"}`}
+              ${
+                active
+                  ? "bg-gray-100 font-medium"
+                  : "text-gray-600 hover:bg-gray-100"
+              }`}
             >
               <div className="w-6 flex justify-center">
-                <img
-                  src={club.avatarUrl || "/avatars/placeholder.png"}
-                  className="w-6 h-6 rounded-md object-cover"
-                />
+                <Avatar className="h-6 w-6 rounded-md">
+                  <AvatarImage
+                    src={club.avatarUrl || "/avatars/placeholder.png"}
+                    alt={club.name}
+                  />
+                  <AvatarFallback className="text-[10px]">
+                    {club.name.slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
               </div>
 
               <AnimatePresence>
@@ -149,32 +166,34 @@ export default function Sidebar() {
           );
         })}
       </nav>
-{/* ───────── DEV TEST LINKS ───────── */}
-{process.env.NODE_ENV === "development" && (
-  <>
-    {!collapsed && (
-      <div className="pt-4 pb-2 text-xs font-medium text-gray-400 px-3">
-        DEV
-      </div>
-    )}
 
-    <Link
-      href="/club-admin/create-community"
-      className="flex items-center rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
-    >
-      <div className="w-6 flex justify-center">🛠</div>
-      {!collapsed && <span className="ml-3">Create Community</span>}
-    </Link>
+      {/* ───────── DEV TEST LINKS ───────── */}
+      {process.env.NODE_ENV === "development" && (
+        <div className="border-t pt-3 pb-2 px-2 space-y-1">
+          {!collapsed && (
+            <div className="text-xs font-medium text-gray-400 px-3">
+              DEV
+            </div>
+          )}
 
-    <Link
-      href="/club-admin/1/create-post"
-      className="flex items-center rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
-    >
-      <div className="w-6 flex justify-center">✍️</div>
-      {!collapsed && <span className="ml-3">Create Post</span>}
-    </Link>
-  </>
-)}
+          <Link
+            href="/club-admin/create-community"
+            className="flex items-center rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100"
+          >
+            <div className="w-6 flex justify-center">🛠</div>
+            {!collapsed && <span className="ml-3">Create Community</span>}
+          </Link>
+
+          <Link
+            href="/club-admin/1/create-post"
+            className="flex items-center rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100"
+          >
+            <div className="w-6 flex justify-center">✍️</div>
+            {!collapsed && <span className="ml-3">Create Post</span>}
+          </Link>
+        </div>
+      )}
+
       {/* ───────── FOOTER ───────── */}
       <div className="border-t p-3">
         <Link

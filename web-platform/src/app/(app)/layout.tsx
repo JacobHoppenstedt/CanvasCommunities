@@ -16,7 +16,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    if (!onboarded && !pathname.startsWith("/onboarding")) {
+    if (
+      !onboarded &&
+      !pathname.startsWith("/onboarding") &&
+      pathname !== "/discovery"
+    ) {
       router.push("/onboarding/recommended");
     }
   }, [user, onboarded, pathname]);

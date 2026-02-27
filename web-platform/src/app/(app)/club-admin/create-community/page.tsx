@@ -29,7 +29,7 @@ export default function CreateCommunityPage() {
     // TODO: Replace with real API call
     console.log("Create community:", form);
 
-    router.push("/recommended");
+    router.push("/discovery");
   };
 
   return (

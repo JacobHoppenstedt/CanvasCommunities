@@ -16,7 +16,7 @@ export default function OnboardRecommended() {
         <Button
           onClick={() => {
             completeOnboarding();
-            router.push("/recommended");
+            router.push("/discovery");
           }}
         >
           Next

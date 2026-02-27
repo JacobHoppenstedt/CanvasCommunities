@@ -38,7 +38,7 @@ export default function Sidebar() {
   if (!mounted) return null;
 
   const mainNav = [
-    { label: "Discover", href: "/recommended", icon: Compass },
+    { label: "Discover", href: "/discovery", icon: Compass },
     { label: "Activity", href: "/activity", icon: Activity },
   ];
 

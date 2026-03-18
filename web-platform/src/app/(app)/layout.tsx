@@ -1,3 +1,4 @@
+// web-platform/src/app/(app)/layout.tsx  (or src/app/layout.tsx — put it where your current AppLayout is)
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
@@ -11,19 +12,23 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
+    console.log("[AppLayout] auth state", { user, onboarded, pathname });
+
+    // If not logged in → go to login
     if (!user) {
+      console.log("[AppLayout] no user -> redirect to /login");
       router.push("/login");
       return;
     }
 
-    if (
-      !onboarded &&
-      !pathname.startsWith("/onboarding") &&
-      pathname !== "/discovery"
-    ) {
-      router.push("/onboarding/recommended");
+    // If user hasn't completed onboarding -> redirect to onboarding personalize
+    if (!onboarded && !pathname.startsWith("/onboarding")) {
+      console.log("[AppLayout] user not onboarded -> redirect to /onboarding/personalize");
+      router.push("/onboarding/personalize");
+      return;
     }
-  }, [user, onboarded, pathname]);
+
+  }, [user, onboarded, pathname, router]);
 
   return <Layout>{children}</Layout>;
 }

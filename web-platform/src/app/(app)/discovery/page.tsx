@@ -6,7 +6,8 @@ import { motion } from "framer-motion";
 import Input from "@/components/ui/input";
 import DiscoveryCarouselRow from "@/components/discovery/DiscoveryCarouselRow";
 import EventsYouMightLike from "@/components/discovery/EventsYouMightLike";
-import { discoveryClubs } from "@/mocks/discovery";
+import { api } from "@/lib/api";
+import useCurrentUser from "@/hooks/useCurrentUser";
 
 const FILTER_CHIPS = [
   "Computer Science",
@@ -33,8 +34,13 @@ function findScrollParent(el: Element | null): Element | null {
 }
 
 export default function DiscoveryPage() {
+  const currentUserId = useCurrentUser(1); // reads localStorage or falls back to 1
   const [query, setQuery] = useState("");
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
+
+  const [clubs, setClubs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const toggleFilter = (label: string) => {
     setActiveFilters((prev) =>
@@ -42,32 +48,74 @@ export default function DiscoveryPage() {
     );
   };
 
-  const applyFilters = (clubs = discoveryClubs) => {
+  useEffect(() => {
+    let mounted = true;
+    async function load() {
+      setLoading(true);
+      setError(null);
+      if (!currentUserId) {
+        setError("No current user");
+        setLoading(false);
+        return;
+      }
+      try {
+        const data = await api.community.getRecommended(currentUserId);
+        if (!mounted) return;
+        // map backend Community -> UI DiscoveryClub shape (use placeholders where schema lacks fields)
+        const mapped = (Array.isArray(data) ? data : []).map((c: any) => ({
+          id: String(c.id),
+          name: c.name,
+          description: c.description || "Club description coming soon.",
+          tags: (c.tags || []).map((t: any) => (t && t.name ? t.name : String(t || ""))),
+          nextMeeting: {
+            title: (c.nextMeeting && c.nextMeeting.title) || "General Meeting",
+            datetime: (c.nextMeeting && c.nextMeeting.datetime) || "TBD",
+            location: (c.nextMeeting && c.nextMeeting.location) || "Campus",
+          },
+          logoSrc: c.avatarUrl || "/avatars/placeholder.png",
+          bannerSrc: c.bannerUrl || c.banner || "/gator-hero.png",
+        }));
+        setClubs(mapped);
+      } catch (err: any) {
+        console.error("Failed to load recommendations", err);
+        setError(err.message || "Failed to load recommendations");
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, [currentUserId]);
+
+  const applyFilters = (clubsToFilter = clubs) => {
     const q = query.trim().toLowerCase();
-    return clubs.filter((club) => {
+    return clubsToFilter.filter((club: any) => {
+      const name = (club.name || "").toLowerCase();
+      const tagNames: string[] = (club.tags || []).map((t: any) => (t || "").toLowerCase());
+
       const matchesQuery =
-        !q ||
-        club.name.toLowerCase().includes(q) ||
-        club.tags.some((tag) => tag.toLowerCase().includes(q));
+        !q || name.includes(q) || tagNames.some((tag) => tag.includes(q));
 
       const matchesFilters =
         activeFilters.length === 0 ||
-        club.tags.some((tag) =>
-          activeFilters.some((filter) => tag.toLowerCase() === filter.toLowerCase())
+        tagNames.some((tag) =>
+          activeFilters.some((filter) => tag === filter.toLowerCase())
         );
 
       return matchesQuery && matchesFilters;
     });
   };
 
-  const forYouClubs = useMemo(() => applyFilters(discoveryClubs), [query, activeFilters]);
+  const forYouClubs = useMemo(() => applyFilters(clubs), [clubs, query, activeFilters]);
   const foodClubs = useMemo(
-    () => applyFilters(discoveryClubs.filter((c) => c.tags.includes("Food"))),
-    [query, activeFilters]
+    () => applyFilters(clubs.filter((c) => (c.tags || []).some((t: any) => t.toLowerCase() === "food"))),
+    [clubs, query, activeFilters]
   );
   const soccerClubs = useMemo(
-    () => applyFilters(discoveryClubs.filter((c) => c.tags.includes("Soccer"))),
-    [query, activeFilters]
+    () => applyFilters(clubs.filter((c) => (c.tags || []).some((t: any) => t.toLowerCase() === "soccer"))),
+    [clubs, query, activeFilters]
   );
 
   const controlsRef = useRef<HTMLDivElement | null>(null);
@@ -143,7 +191,7 @@ export default function DiscoveryPage() {
 
   return (
     <div ref={pageWrapperRef} className="relative min-h-full bg-[url('/personalpage.png')] bg-cover bg-center">
-    <div className="absolute inset-0 bg-white/90" />
+      <div className="absolute inset-0 bg-white/90" />
 
       {/* page content */}
       <div className="relative px-10 py-2 min-w-0">
@@ -189,38 +237,46 @@ export default function DiscoveryPage() {
 
             {/* Rows*/}
             <div className="mt-4 space-y-4">
-              <DiscoveryCarouselRow
-                title={
-                  <>
-                    For <span className="text-orange-500">You</span>
-                  </>
-                }
-                clubs={forYouClubs}
-                rowId="for-you"
-                rowHeight={rowHeight}
-              />
+              {loading ? (
+                <p className="text-sm text-muted-foreground">Loading recommendations…</p>
+              ) : error ? (
+                <p className="text-sm text-red-500">Error: {error}</p>
+              ) : (
+                <>
+                  <DiscoveryCarouselRow
+                    title={
+                      <>
+                        For <span className="text-orange-500">You</span>
+                      </>
+                    }
+                    clubs={forYouClubs}
+                    rowId="for-you"
+                    rowHeight={rowHeight}
+                  />
 
-              <DiscoveryCarouselRow
-                title={
-                  <>
-                    Since you liked <span className="text-orange-500">Food</span>
-                  </>
-                }
-                clubs={foodClubs}
-                rowId="food"
-                rowHeight={rowHeight}
-              />
+                  <DiscoveryCarouselRow
+                    title={
+                      <>
+                        Since you liked <span className="text-orange-500">Food</span>
+                      </>
+                    }
+                    clubs={foodClubs}
+                    rowId="food"
+                    rowHeight={rowHeight}
+                  />
 
-              <DiscoveryCarouselRow
-                title={
-                  <>
-                    Since you liked <span className="text-orange-500">Soccer</span>
-                  </>
-                }
-                clubs={soccerClubs}
-                rowId="soccer"
-                rowHeight={rowHeight}
-              />
+                  <DiscoveryCarouselRow
+                    title={
+                      <>
+                        Since you liked <span className="text-orange-500">Soccer</span>
+                      </>
+                    }
+                    clubs={soccerClubs}
+                    rowId="soccer"
+                    rowHeight={rowHeight}
+                  />
+                </>
+              )}
             </div>
           </div>
 
@@ -241,7 +297,6 @@ export default function DiscoveryPage() {
         aria-hidden
         className="fixed left-4 bottom-4 z-50 rounded-md bg-white/90 px-3 py-2 text-xs shadow-md text-slate-700"
       >
-
       </div>
     </div>
   );

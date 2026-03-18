@@ -33,8 +33,9 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
-    "@prisma/adapter-pg": "^7.4.2",
-    "@types/node": "^20.19.35",
+    "@prisma/adapter-pg": "^7.5.0",
+    "@types/bcrypt": "^6.0.0",
+    "@types/node": "^20.19.37",
     "@types/pg": "^8.18.0",
     "@types/react": "^19.2.13",
     "@types/react-dom": "^19",
@@ -42,7 +43,7 @@
     "dotenv": "^17.3.1",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
-    "pg": "^8.19.0",
+    "pg": "^8.20.0",
     "postcss": "^8.5.6",
     "prisma": "^7.4.2",
     "tailwindcss": "^3.4.17",

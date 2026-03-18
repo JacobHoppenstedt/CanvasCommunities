@@ -1,3 +1,4 @@
+// web-platform/src/app/(onboard)/personalize/page.tsx
 "use client";
 
 import PersonalizePage from "@/app/(app)/personalize/page";
@@ -9,9 +10,15 @@ export default function OnboardPersonalize() {
   const { completeOnboarding } = useAuth();
   const router = useRouter();
 
-  function finish() {
-    completeOnboarding();
-    router.push("/onboarding/recommended");
+  async function finish() {
+    console.log("[OnboardWrapper] finish() called - awaiting completeOnboarding()");
+    try {
+      await completeOnboarding();
+      console.log("[OnboardWrapper] completeOnboarding resolved - navigating to /discovery");
+      router.push("/discovery");
+    } catch (err) {
+      console.error("[OnboardWrapper] completeOnboarding error", err);
+    }
   }
 
   return (

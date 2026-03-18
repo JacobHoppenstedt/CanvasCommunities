@@ -1,3 +1,4 @@
+// web-platform/src/lib/api.ts
 type User = {
   id: number;
   username: string;
@@ -13,6 +14,8 @@ type Community = {
 };
 
 async function request<T>(url: string, options: RequestInit): Promise<T> {
+  console.log("[api] request >", url, { method: options.method, body: options?.body ? JSON.parse(String(options.body)) : undefined });
+
   const res = await fetch(url, {
     ...options,
     headers: {
@@ -21,8 +24,20 @@ async function request<T>(url: string, options: RequestInit): Promise<T> {
     },
   });
 
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || "API request failed");
+  let data: any;
+  try {
+    data = await res.json();
+  } catch (e) {
+    console.warn("[api] non-json response", url, e);
+    throw new Error("API returned non-JSON response");
+  }
+
+  if (!res.ok) {
+    console.error("[api] request failed <", url, res.status, data);
+    throw new Error(data.error || "API request failed");
+  }
+
+  console.log("[api] response <", url, data);
   return data;
 }
 

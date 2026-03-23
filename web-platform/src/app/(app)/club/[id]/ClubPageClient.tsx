@@ -21,6 +21,7 @@ import EventCard from "@/components/EventCard";
 import { api } from "@/lib/api";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { discoveryClubs, type DiscoveryClub } from "@/mocks/discovery";
+import { mockClubs } from "@/mocks/clubs";
 
 /**
  * Robust Club page client:
@@ -64,6 +65,20 @@ export default function ClubPageClient({ club: clubProp, events: eventsProp }: a
     };
   }
 
+  function mapSidebarMockToClub(c: any) {
+    return {
+      id: c.id,
+      name: c.name ?? "Untitled Club",
+      description: c.description ?? c.blurb ?? "Club description coming soon.",
+      tags: c.tags ?? [],
+      avatarUrl: c.avatarUrl ?? c.logoSrc ?? c.logo ?? "/avatars/placeholder.png",
+      bannerUrl: c.bannerUrl ?? c.bannerSrc,
+      nextMeeting: c.nextMeeting,
+      members: c.members ?? [],
+      events: c.events ?? [],
+    };
+  }
+
   // load club on mount if prop wasn't provided
   useEffect(() => {
     let mounted = true;
@@ -85,6 +100,17 @@ export default function ClubPageClient({ club: clubProp, events: eventsProp }: a
           if (bySlug) {
             console.log("[ClubPage] found mock club by slug:", bySlug.name);
             const mapped = mapMockToClub(bySlug);
+            if (!mounted) return;
+            setClub(mapped);
+            setEvents(mapped.events || []);
+            setJoined(Boolean(mapped.members?.some((m: any) => Number(m.userId) === Number(currentUserId))));
+            return;
+          }
+
+          const bySidebarId = mockClubs.find((d: any) => d.id === String(routeId));
+          if (bySidebarId) {
+            console.log("[ClubPage] found sidebar mock club by id:", bySidebarId.name);
+            const mapped = mapSidebarMockToClub(bySidebarId);
             if (!mounted) return;
             setClub(mapped);
             setEvents(mapped.events || []);
@@ -174,9 +200,6 @@ export default function ClubPageClient({ club: clubProp, events: eventsProp }: a
       setJoining(false);
     }
   };
-  if (!club) {
-    return <div className="p-6">Loading club...</div>;
-  }
   // Render states:
   if (club === undefined) {
     // still loading

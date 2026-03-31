@@ -90,5 +90,24 @@ export const api = {
       request(`/api/community/recommend?userId=${userId}`, { method: "GET" }),
     getById: (id: number): Promise<Community> =>
       request(`/api/community/get?id=${id}`, { method: "GET" }),
+    createEvent: (event: any) =>
+      request("/api/community/event/create", { method: "POST", body: JSON.stringify(event) }),
+    createAnnouncement: (announcement: any) =>
+      request("/api/community/announcement/create", { method: "POST", body: JSON.stringify(announcement) }),
+    uploadImage: (image: any) =>
+      request("/api/community/gallery/upload", { method: "POST", body: JSON.stringify(image) }),
   },
+  role: {
+    create: (name: string, communityId: number) =>
+      request("/api/role", { method: "POST", body: JSON.stringify({ name, communityId }) }),
+    assign: (userId: number, roleId: number) =>
+      request("/api/role", { method: "POST", body: JSON.stringify({ userId, roleId }) }),
+    getById: (roleId: number) => request(`/api/role?roleId=${roleId}`, { method: "GET" }),
+    getByCommunity: (communityId: number) => request(`/api/role?communityId=${communityId}`, { method: "GET" }),
+    getByUser: (userId: number) => request(`/api/role?userId=${userId}`, { method: "GET" }),
+    update: (id: number, name: string) => request("/api/role", { method: "PATCH", body: JSON.stringify({ id, name }) }),
+    delete: (roleId: number) => request(`/api/role?roleId=${roleId}`, { method: "DELETE" }),
+    removeUserRole: (userId: number, roleId: number) =>
+      request(`/api/role?roleId=${roleId}&userId=${userId}`, { method: "DELETE" }),
+  }
 };

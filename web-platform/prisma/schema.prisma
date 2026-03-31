@@ -21,7 +21,30 @@ model User {
   memberships     Membership[]
   interactions    Interaction[]
   recommendations Recommendation[]
+  roles                UserRole[]
+  eventsCreated        Event[]        @relation("EventCreator")
+  announcementsPosted Announcement[] @relation("UserAnnouncements")
+  imagesUploaded Image[] @relation("UserImages")
 }
+
+model Role {
+  id           Int       @id @default(autoincrement())
+  name         String    // e.g., "President", "VP of Tech"
+  community    Community @relation(fields: [communityId], references: [id])
+  communityId  Int
+  users        UserRole[]
+}
+
+model UserRole {
+  id      Int   @id @default(autoincrement())
+  user    User  @relation(fields: [userId], references: [id])
+  userId  Int
+  role    Role  @relation(fields: [roleId], references: [id])
+  roleId  Int
+
+  @@unique([userId, roleId])
+}
+
 
 model Community {
   id              Int              @id @default(autoincrement())
@@ -32,6 +55,10 @@ model Community {
   members         Membership[]
   interactions    Interaction[]
   recommendations Recommendation[]
+  roles           Role[]
+  events          Event[]
+  announcements   Announcement[]
+  galleryCategories GalleryCategory[]
 }
 
 model Tag {
@@ -39,6 +66,8 @@ model Tag {
   name        String      @unique
   users       User[]      @relation("UserInterests")
   communities Community[] @relation("CommunityTags")
+  events         Event[]         @relation("EventTags")
+  announcements  Announcement[]  @relation("AnnouncementTags")
 }
 
 model Membership {
@@ -75,4 +104,52 @@ model Recommendation {
   community    Community @relation(fields: [communityId], references: [id])
 
   @@unique([userId, communityId])
+}
+
+model Event {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String
+  location    String?
+  startTime   DateTime
+  endTime     DateTime?
+  community   Community @relation(fields: [communityId], references: [id])
+  communityId Int
+  tags        Tag[]     @relation("EventTags")
+  createdBy   User      @relation("EventCreator", fields: [createdById], references: [id])
+  createdById Int
+  createdAt   DateTime  @default(now())
+}
+
+model Announcement {
+  id          Int       @id @default(autoincrement())
+  title       String
+  content     String
+  community   Community @relation(fields: [communityId], references: [id])
+  communityId Int
+  createdBy   User @relation("UserAnnouncements", fields: [createdById], references: [id])
+  createdById Int
+  createdAt   DateTime  @default(now())
+  scheduledAt DateTime?
+  tags        Tag[]     @relation("AnnouncementTags")
+}
+
+model GalleryCategory {
+  id          Int       @id @default(autoincrement())
+  name        String    // e.g., "All", "Community", "Campus", "Outreach"
+  community   Community @relation(fields: [communityId], references: [id])
+  communityId Int
+  images      Image[]
+}
+
+
+model Image {
+  id            Int             @id @default(autoincrement())
+  url           String
+  description   String?
+  uploadedAt    DateTime        @default(now())
+  uploadedBy    User @relation("UserImages", fields: [uploadedById], references: [id])
+  uploadedById  Int
+  category      GalleryCategory @relation(fields: [categoryId], references: [id])
+  categoryId    Int
 }
